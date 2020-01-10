@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <canvas></canvas>
+    <div id="div1" class="page-wrapper" >
+        <div class="box">
+            <h1>Pagina 1</h1>
+        </div>
+        <div class="box">
+            <h1>Pagina 2</h1>
+        </div>
+        <div class="box">
+            <h1>Pagina 3</h1>
+        </div>
+    </div>
+    <script type="module">
+        import * as THREE from './three/build/three.module.js';
+        import { OBJLoader } from './three/examples/jsm/loaders/OBJLoader.js';
+        import {OrbitControls} from "./three/examples/jsm/controls/OrbitControls.js";
+
+        var meshes, geometry,meshHolder;
+        var radius = 250;
+        var numMeshes = 1050;
+        var t = 0;
+
+        var ww = window.innerWidth,
+            wh = window.innerHeight;
+
+        var renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        canvas: document.querySelector('canvas')
+        });
+
+        renderer.setSize(ww, wh);
+        renderer.setClearColor(0x001a2d);
+
+        var scene = new THREE.Scene();
+
+        var camera = new THREE.PerspectiveCamera(75, ww/wh, 0.1, 1000);
+        camera.position.set(0,0,1000);
+
+        function render(a) {
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+
+            t += 0.01;
+            //camera.position.x = 100;
+            //camera.position.y = 10;
+            camera.position.x = 500 * Math.cos( t );
+            camera.position.z = 500 * Math.sin( t );
+            camera.lookAt( scene.position );
+            
+            for(var k = 0; k<numMeshes; k++){
+                //meshes[k].lookAt( camera.position );
+                meshes[k].rotation.x += 0.09; 
+            }
+            
+            console.log(camera.position);
+        }
+
+        function onResize() {
+            ww = window.innerWidth;
+            wh = window.innerHeight;
+            camera.aspect = ww / wh;
+            camera.updateProjectionMatrix();
+            renderer.setSize(ww, wh);
+        }
+
+        var axisHelper = new THREE.AxisHelper(500);
+        scene.add(axisHelper);
+
+        const boxGeometry = new THREE.BoxBufferGeometry(10, 10, 10);
+        const materialBox = new THREE.MeshPhongMaterial({color: 'green'});
+        const boxMesh = new THREE.Mesh(boxGeometry, materialBox);
+        boxMesh.position.set(0, 40, 300);
+        scene.add(boxMesh);
+
+        meshes = [];
+        meshHolder = new THREE.Object3D;
+        scene.add(meshHolder); 
+        geometry = new THREE.BoxBufferGeometry(10, 10, 10);//new THREE.PlaneGeometry(80, 80, 1, 1);
+
+        var mesh, opac, material;
+        for(var i = 0; i<numMeshes; i++){
+        
+            opac = Math.random();
+            material = new THREE.MeshBasicMaterial( { 
+                color:0x00c5ff, 
+                opacity:opac, 
+                transparent:true
+            });
+            mesh = new THREE.Mesh( geometry, material );
+            meshes.push(mesh);
+            meshHolder.add(mesh);
+        }
+
+        positionOnSphere();
+        
+        function positionOnSphere(){
+            
+            var r, theta, phi, p;
+            for (var t=0 ;t<numMeshes; t++) {	
+                
+                p=meshes[t]
+                r = radius*Math.pow(1,1);
+                theta = Math.random()*Math.PI*2;
+                phi = Math.acos(2*Math.random()-1);
+                console.log(p);
+                p.position.set( r*Math.sin(phi)*Math.cos(theta), r*Math.sin(phi)*Math.sin(theta), r*Math.cos(phi));
+            }       
+        }
+
+        requestAnimationFrame(render);
+        window.addEventListener('resize', onResize);
+    </script>
+</body>
+</html>
