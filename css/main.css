@@ -15,6 +15,10 @@ canvas {
     word-wrap: break-word;
     height: 100vh;
     background: transparent;
+    background: url(https://static.sketchfab.com/static/builds/web/dist/static/assets/images/errors/foreground-16aba946a4d20cd3dd87e61fc8b3a758.svg);
+    z-index: -2;
+    margin: 0;
+    width: 100%;
 }
 .box{
     height: 100%;

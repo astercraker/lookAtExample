@@ -34,12 +34,15 @@
             wh = window.innerHeight;
 
         var renderer = new THREE.WebGLRenderer({
+        alpha: true,
         antialias: true,
         canvas: document.querySelector('canvas')
         });
 
         renderer.setSize(ww, wh);
-        renderer.setClearColor(0x001a2d);
+        //renderer.setClearColor(0x001a2d);
+        renderer.setClearColor( 0x000000, 0 ); // the default
+
 
         var scene = new THREE.Scene();
 
@@ -59,10 +62,10 @@
             
             for(var k = 0; k<numMeshes; k++){
                 //meshes[k].lookAt( camera.position );
-                meshes[k].rotation.x += 0.09; 
+                meshes[k].rotation.y += 0.09; 
             }
-            
-            console.log(camera.position);
+            boxMesh.lookAt(camera.position);
+            //console.log(camera.position);
         }
 
         function onResize() {
@@ -73,19 +76,29 @@
             renderer.setSize(ww, wh);
         }
 
+        var light = new THREE.AmbientLight( 0x404040 , 4); // soft white light
+        scene.add( light );
+
         var axisHelper = new THREE.AxisHelper(500);
         scene.add(axisHelper);
 
-        const boxGeometry = new THREE.BoxBufferGeometry(10, 10, 10);
-        const materialBox = new THREE.MeshPhongMaterial({color: 'green'});
+        var texture = new THREE.TextureLoader().load( 'three/examples/textures/planets/moon_1024.jpg' );
+
+        const boxGeometry = new THREE.SphereGeometry(20, 32, 32, 6);// new THREE.BoxBufferGeometry(10, 10, 10);
+        //color: 'green',
+        const materialBox = new THREE.MeshPhongMaterial({map: texture });
         const boxMesh = new THREE.Mesh(boxGeometry, materialBox);
         boxMesh.position.set(0, 40, 300);
+        
         scene.add(boxMesh);
+
+        
 
         meshes = [];
         meshHolder = new THREE.Object3D;
         scene.add(meshHolder); 
-        geometry = new THREE.BoxBufferGeometry(10, 10, 10);//new THREE.PlaneGeometry(80, 80, 1, 1);
+        geometry = new THREE.PlaneGeometry(6, 6, 1, 1);
+        //new THREE.BoxBufferGeometry(10, 10, 10);
 
         var mesh, opac, material;
         for(var i = 0; i<numMeshes; i++){
@@ -112,7 +125,7 @@
                 r = radius*Math.pow(1,1);
                 theta = Math.random()*Math.PI*2;
                 phi = Math.acos(2*Math.random()-1);
-                console.log(p);
+                //console.log(p);
                 p.position.set( r*Math.sin(phi)*Math.cos(theta), r*Math.sin(phi)*Math.sin(theta), r*Math.cos(phi));
             }       
         }
